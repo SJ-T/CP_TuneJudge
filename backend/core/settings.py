@@ -1,6 +1,7 @@
 import environ
 import os
 
+from google.oauth2 import service_account
 from pathlib import Path
 
 
@@ -31,7 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app.apps.AppConfig',
-    'rest_framework'
+    'rest_framework',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -122,6 +124,16 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_ROOT = BASE_DIR / 'media'
+DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
+GS_PROJECT_ID = env('GS_PROJECT_ID')
+GS_BUCKET_NAME = env('GS_BUCKET_NAME')
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    env('GS_CREDENTIALS')
+)
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STORAGES = {
+    "default": {"BACKEND": DEFAULT_FILE_STORAGE},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
 
-MEDIA_URL = '/media/'
+WAV_FILE_PATH = env('WAV_FILE_PATH')
