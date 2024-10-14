@@ -1,0 +1,78 @@
+.stApp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: radial-gradient(circle at center, rgba(255, 223, 186, 0.7), rgba(255, 179, 128, 0.8), rgba(255, 105, 97, 0.9));
+    background-position: 100% 100%;
+    background-size: 200% 200%;
+    opacity: 1;
+    transition: opacity 2s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+.stApp > header {
+    display: none;
+}
+.block-container {
+    padding: 0; !important;
+    height: 100%; !important;
+    overflow: hidden; !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stVerticalBlockBorderWrapper"] > div,
+[data-testid="stVerticalBlockBorderWrapper"] > div > div,
+[data-testid="stVerticalBlockBorderWrapper"] > div > div > div {
+    height: 100%; !important;
+    overflow: hidden; !important;
+    display: block; !important;
+}
+iframe {
+    height: 100%; !important;
+    overflow: hidden; !important;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+#root {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+}
+.play-button {
+    width: 90px;
+    height: 53px;
+    position: absolute;
+    padding: 1rem 1rem 1rem 1rem;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: 4;
+    border: 2px solid #1d5155;
+    color: #0a4449;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.5s;
+    background: transparent;
+}
+
+.play-button:hover {
+  background: #69cdd7;
+  color: #333;
+}
+
+.play-button.hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-50%);
+}
