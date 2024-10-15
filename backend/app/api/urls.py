@@ -8,4 +8,6 @@ router.register(r'ratings', views.RatingViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('rate-song/', views.RatingViewSet.as_view({'post': 'rate_song'}), name='rate-song'),
+    path('song-ratings/', views.RatingViewSet.as_view({'get': 'song_ratings'}), name='song-ratings'),
 ]

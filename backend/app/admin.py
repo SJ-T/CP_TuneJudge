@@ -9,4 +9,6 @@ class MusicAdmin(admin.ModelAdmin):
 
 @admin.register(Rating)
 class RateAdmin(admin.ModelAdmin):
-    list_display = ('song', 'rating')
+    list_display = ('song', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at')
+    search_fields = ('song__title',)

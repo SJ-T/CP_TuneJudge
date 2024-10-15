@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.files.storage import default_storage
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Music(models.Model):
     LABEL_CHOICES = [
@@ -40,5 +41,15 @@ class Music(models.Model):
 
 
 class Rating(models.Model):
-    song = models.ForeignKey(Music, on_delete=models.CASCADE)
-    rating = models.IntegerField(default=0)
+    song = models.ForeignKey(Music, on_delete=models.CASCADE, related_name='ratings')
+    rating = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Rating {self.rating} for {self.song.file}"
+
