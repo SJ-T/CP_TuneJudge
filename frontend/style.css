@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');
+
 .stApp {
     position: absolute;
     top: 0;
@@ -16,39 +18,13 @@
     height: 100vh;
     overflow: hidden;
 }
+.stMain {
+    justify-content: center;
+}
 .stApp > header {
     display: none;
 }
-.block-container {
-    padding: 0; !important;
-    height: 100%; !important;
-    overflow: hidden; !important;
-}
-[data-testid="stVerticalBlockBorderWrapper"],
-[data-testid="stVerticalBlockBorderWrapper"] > div,
-[data-testid="stVerticalBlockBorderWrapper"] > div > div,
-[data-testid="stVerticalBlockBorderWrapper"] > div > div > div {
-    height: 100%; !important;
-    overflow: hidden; !important;
-    display: block; !important;
-}
-iframe {
-    height: 100%; !important;
-    overflow: hidden; !important;
-}
 
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    overflow: hidden;
-}
-#root {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-}
 .play-button {
     width: 90px;
     height: 53px;
