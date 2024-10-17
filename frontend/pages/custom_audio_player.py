@@ -1,9 +1,8 @@
-import streamlit as st
 import streamlit.components.v1 as components
 
 
-def custom_audio_player(audio_url, css_path):
-    with open(css_path, 'r') as f:
+def custom_audio_player(audio_url=None):
+    with open('frontend/style.css', 'r') as f:
         css = f'<style>{f.read()}</style>'
     custom_html = f"""
     <!DOCTYPE html>
@@ -37,4 +36,4 @@ def custom_audio_player(audio_url, css_path):
     </body>
     </html>
     """
-    components.html(custom_html, height=0)
+    components.html(custom_html, height=100)
