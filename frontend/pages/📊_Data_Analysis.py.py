@@ -1,15 +1,13 @@
-import streamlit as st
 import numpy as np
 import pandas as pd
-import plotly.figure_factory as ff
-import plotly.graph_objects as go
+import streamlit as st
 import plotly.express as px
-from plotly.subplots import make_subplots
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
-df = pd.read_csv('frontend/features_data/midi_ds_features.csv')
+from plotly.subplots import make_subplots
+from frontend.utils import load_music_data
+
+df = load_music_data()
 df_pop = df[df['genre'] == 'pop']
 df_classical = df[df['genre'] == 'classical']
 color_map = {'pop': '#1f77b4', 'classical': '#ff7f0e'}
@@ -222,31 +220,24 @@ plot_transition_heatmap('classical', 'iv_dist2', 'Oranges',
 # """==========================complexity & originality & gradus=========================="""
 features = ['complexity', 'originality', 'gradus']
 
-# Create a subplot with 1 row and 3 columns
 fig = make_subplots(rows=1, cols=3)
 
-# Loop through each feature to create histograms for both genres
 for i, feature in enumerate(features):
-    # Remove NaN values for each genre
     pop_data = df_pop[feature].dropna()
     classical_data = df_classical[feature].dropna()
 
-    # Add Pop histogram
     fig.add_trace(
         go.Histogram(x=pop_data, name='Pop', histnorm='probability', marker_color=color_map['pop'], opacity=0.75,
                      showlegend=True if i == 0 else False), row=1, col=i + 1
     )
 
-    # Add Classical histogram
     fig.add_trace(
         go.Histogram(x=classical_data, name='Classical', histnorm='probability', marker_color=color_map['classical'],
                      opacity=0.75, showlegend=True if i == 0 else False), row=1, col=i + 1
     )
 
-    # Update layout for the subplots
     fig.update_xaxes(title_text=feature, row=1, col=i + 1)
 
-# Update layout for the entire figure
 fig.update_layout(title_text="Histograms of Complexity, Originality, and Gradus(Melodiousness) by Genre",
                   barmode='overlay', showlegend=True, legend=dict(x=1, y=1),
                   height=500, width=1000)
