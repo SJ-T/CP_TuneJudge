@@ -27,14 +27,20 @@ class RatingViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def rate_song(self, request):
-        song_id = request.data.get('song_id')
+        song_id = request.data.get('song')
+        rating = request.data.get('rating')
+
+        if not song_id:
+            return Response({"error": "Song ID is required"}, status=400)
+        if not rating:
+            return Response({"error": "Rating is required"}, status=400)
 
         try:
             Music.objects.get(id=song_id)
         except Music.DoesNotExist:
             return Response({"error": "Song not found"}, status=404)
 
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data={'song': song_id, 'rating': rating})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
