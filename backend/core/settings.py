@@ -136,4 +136,6 @@ STORAGES = {
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
 
+DATASET_FEATURES_PATH = env('DATASET_FEATURES_PATH')
+EXP_FEATURES_PATH = env('EXP_FEATURES_PATH')
 WAV_FILE_PATH = env('WAV_FILE_PATH')
