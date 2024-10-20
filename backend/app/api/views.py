@@ -1,14 +1,10 @@
-import numpy as np
-
 from ..data_processing import get_processed_music_data
-from django.db.models import Avg, F, Count
 from django.http import JsonResponse
 from ..models import Music, Rating
 from random import choice
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from .serializers import MusicSerializer, RatingSerializer
 
 
