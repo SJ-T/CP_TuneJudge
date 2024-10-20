@@ -1,80 +1,18 @@
-import numpy as np
-import pandas as pd
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
 from plotly.subplots import make_subplots
-from frontend.utils import load_music_data
+from frontend.utils import load_music_data, plot_histogram, plot_bar, plot_transition_heatmap
 
-df = load_music_data()
+
+st.set_page_config(layout="centered", initial_sidebar_state="collapsed")
+
+df_dict = load_music_data()
+df = df_dict['origin_df']
 df_pop = df[df['genre'] == 'pop']
 df_classical = df[df['genre'] == 'classical']
 color_map = {'pop': '#1f77b4', 'classical': '#ff7f0e'}
-seed = 42
-num_samples = 106
-
-
-def restore_matrix_from_str(matrix_str):
-    if pd.isna(matrix_str):
-        return matrix_str
-    else:
-        rows = matrix_str.strip('[]').split(';')
-        matrix = np.array([list(map(float, row.split())) for row in rows])
-        return matrix
-
-
-def get_mean_iv_df_1D(intervals, feature):
-    np.random.seed(seed)
-    mean_dist = pd.DataFrame({
-        'intervals': intervals,
-        'pop': df[df['genre'] == 'pop'][feature].dropna().sample(n=num_samples, random_state=seed)
-        .apply(lambda x: np.fromstring(x.strip('[]'), sep=' ')).mean(),
-        'classical': df[df['genre'] == 'classical'][feature].dropna().
-        apply(lambda x: np.fromstring(x.strip('[]'), sep=' ')).mean()
-    })
-    melted_df = mean_dist.melt(id_vars='intervals', value_vars=['pop', 'classical'], var_name='genre',
-                               value_name='probability')
-
-    return melted_df
-
-
-def plot_histogram(data, x_col, title, xaxis_title=None, color=None, **kwargs):
-    fig = px.histogram(data, x=x_col, title=title, color=color, **kwargs)
-    if xaxis_title:
-        fig.update_layout(xaxis_title=xaxis_title)
-    fig.update_layout(legend=dict(x=0.87, y=0.95, bgcolor='rgba(255, 255, 255, 0.5)'))
-    st.plotly_chart(fig)
-
-
-def plot_bar(df, x_axis, y_axis, title, color, **kwargs):
-    x_label = kwargs.get('x_label', x_axis)
-    sort = kwargs.get('sort', True)
-    tick_labels = kwargs.get('tick_labels', None)
-    if sort:
-        fig = px.bar(df, x=x_axis, y=y_axis, color_discrete_sequence=color, title=title,
-                     labels={genre: 'probability', x_axis: x_label},
-                     category_orders={x_axis: df.sort_values(genre, ascending=False)[x_axis]})
-    else:
-        fig = px.bar(df, x=x_axis, y=y_axis, color=color, title=title, barmode='group',
-                     labels={genre: 'probability', x_axis: x_label}, color_discrete_map
-                     =kwargs.get('color_map', None))
-    if tick_labels:
-        fig.update_xaxes(tickvals=list(range(len(tick_labels))), ticktext=list(tick_labels))
-    st.plotly_chart(fig)
-
-def plot_transition_heatmap(genre, feature, color_scale, title, labels, **kwargs):
-    tick_labels = kwargs.get('tick_labels', None)
-    np.random.seed(seed)
-    sampled_data = df[df['genre'] == genre][feature].dropna().sample(n=num_samples, random_state=seed).values
-    mean_df = pd.DataFrame(np.mean(np.stack(sampled_data), axis=0), index=labels, columns=labels)
-    mean_df = mean_df.iloc[::-1]
-    fig = px.imshow(mean_df, x=labels, y=labels[::-1], title=title,
-                    color_continuous_scale=color_scale)
-    if tick_labels:
-        fig.update_xaxes(tickvals=list(range(len(tick_labels))), ticktext=list(tick_labels))
-        fig.update_yaxes(tickvals=list(range(len(tick_labels))), ticktext=list(tick_labels)[::-1])
-    st.plotly_chart(fig)
 
 
 # """==========================keys=========================="""
@@ -90,10 +28,12 @@ plot_histogram(df, 'key', 'Histogram of Keys by Genre', color='genre', histnorm=
                barmode='group', color_discrete_map=color_map,
                category_orders={'key': df['key'].value_counts().index})
 
+
 # """==========================durations=========================="""
 plot_histogram(df, 'duration', 'Histogram of Duration by Genre', color='genre',
                histnorm='probability', barmode='overlay',
                color_discrete_map=color_map, opacity=0.75, marginal='box')
+
 
 # """==========================note durational variability=========================="""
 # Histogram
@@ -108,16 +48,6 @@ fig_npvi_violin = px.violin(df, y='npvi', x='genre', color='genre', box=True, po
 fig_npvi_violin.update_layout(legend=dict(x=0.87, y=0.95, bgcolor='rgba(255, 255, 255, 0.5)'))
 st.plotly_chart(fig_npvi_violin)
 
-# fig_key_npvi = go.Figure()
-# fig_key_npvi.add_trace(go.Violin(x=df['key'][df['genre'] == 'pop'], y=df['npvi'][df['genre'] == 'pop'],
-#                                  legendgroup='pop', scalegroup='pop', name='pop', side='negative', line_color=color_map['pop']
-#                                  ))
-# fig_key_npvi.add_trace(go.Violin(x=df['key'][df['genre'] == 'classical'], y=df['npvi'][df['genre'] == 'classical'],
-#                                  legendgroup='classical', scalegroup='classical', name='classical', side='positive',
-#                                  line_color=color_map['classical']
-#                                  ))
-# fig_key_npvi.update_layout(legend=dict(x=0.87, y=0.95, bgcolor='rgba(255, 255, 255, 0.5)'))
-# st.plotly_chart(fig_key_npvi)
 
 # """==========================note density=========================="""
 # Histogram
@@ -142,6 +72,7 @@ fig_dur_npvi = px.scatter(df, x='duration', y='npvi', color='genre', opacity=0.7
                           color_discrete_map=color_map)
 st.plotly_chart(fig_dur_npvi)
 
+
 # """==========================pitch range=========================="""
 plot_histogram(df, 'pitch_range', 'Pitch range in semitones by genre', color='genre', opacity=0.75,
                histnorm='probability', barmode='overlay', color_discrete_map=color_map,
@@ -165,63 +96,63 @@ st.plotly_chart(fig_pr_dur_nd)
 
 
 # """==========================pitch class=========================="""
-pitch_classes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-df['pc_dist1'] = df['pc_dist1'].apply(lambda x: np.fromstring(x.strip('[]'), sep=' '))
-mean_pcdist1 = pd.DataFrame({
-    'pitch_class': pitch_classes,
-    'pop': df[df['genre'] == 'pop']['pc_dist1'].mean(),
-    'classical': df[df['genre'] == 'classical']['pc_dist1'].mean()
-})
+mean_pcdist1 = df_dict['pitch_class_dist']
 for genre in ['pop', 'classical']:
-    plot_bar(mean_pcdist1, 'pitch_class', genre,
-             f'Mean Pitch Class Distribution Probability of {genre.capitalize()} Dataset',
-             [color_map[genre]], x_label='pitch class')
+    plot_bar(mean_pcdist1, x_axis='pitch_classes', y_axis=genre,
+             title=f'Mean Pitch Class Distribution Probability of {genre.capitalize()} Dataset',
+             color=[color_map[genre]], x_label='pitch class')
+
 
 # """==========================pitch class transition=========================="""
-df['pc_dist2'] = df['pc_dist2'].apply(restore_matrix_from_str)
+mean_pcdist2 = df_dict['pitch_transition_dist']
+plot_transition_heatmap(mean_pcdist2['pop'], 'Blues',
+                        'Pitch Transition Heatmap of Pop Dataset', mean_pcdist2['labels'])
+plot_transition_heatmap(mean_pcdist2['classical'], 'Oranges',
+                        'Pitch Transition Heatmap of Classical Dataset', mean_pcdist2['labels'])
 
-plot_transition_heatmap('pop', 'pc_dist2', 'Blues',
-                        'Pitch Transition Heatmap of Pop Dataset', pitch_classes)
-plot_transition_heatmap('classical', 'pc_dist2', 'Oranges',
-                        'Pitch Transition Heatmap of Classical Dataset', pitch_classes)
 
 # """==========================intervals=========================="""
-intervals = [
-    '-P8', '-M7', '-m7', '-M6', '-m6', '-P5', '-d5', '-P4',
-    '-M3', '-m3', '-M2', '-m2', 'P1', '+m2', '+M2', '+m3',
-    '+M3', '+P4', '+d5', '+P5', '+m6', '+M6', '+m7', '+M7', '+P8'
-]
+mean_ivdist1 = df_dict['interval_dist']
+
+intervals = mean_ivdist1['intervals'].tolist()
 tick_labels = [label if i % 3 == 0 else '' for i, label in enumerate(intervals)]
 
-mean_ivdist1 = get_mean_iv_df_1D(intervals, 'iv_dist1')
-
-plot_bar(mean_ivdist1, 'intervals', 'probability', color='genre', color_map=color_map,
+melted_df = mean_ivdist1.melt(id_vars='intervals', var_name='genre', value_name='probability')
+plot_bar(melted_df, x_axis='intervals', y_axis='probability', color='genre', color_map=color_map,
          title=f'Mean Interval Distribution Probability by Genre', sort=False, tick_labels=tick_labels)
+
 
 # """==========================interval size=========================="""
 intervals_without_directions = ['P1', 'MI2', 'MA2', 'MI3', 'MA3', 'P4', 'D5', 'P5', 'MI6', 'MA6', 'MI7', 'MA7', 'P8']
-mean_ivsizedist1 = get_mean_iv_df_1D(intervals_without_directions, 'ivsize_dist1')
+mean_ivsizedist1 = df_dict['interval_size_dist']
+melted_df = mean_ivsizedist1.melt(id_vars='intervals', var_name='genre', value_name='probability')
 
-plot_bar(mean_ivsizedist1, 'intervals', 'probability', color='genre', color_map=color_map,
+plot_bar(melted_df, 'intervals', 'probability', color='genre', color_map=color_map,
          title=f'Mean Interval Size Distribution Probability by Genre', sort=False)
 
+
 # """==========================interval direction=========================="""
-mean_ivdirdist1 = get_mean_iv_df_1D(intervals_without_directions[1:], 'ivdir_dist1')
-plot_bar(mean_ivdirdist1, 'intervals', 'probability', color='genre', color_map=color_map,
+mean_ivdirdist1 = df_dict['interval_dir_dist']
+melted_df = mean_ivdirdist1.melt(id_vars='intervals', var_name='genre', value_name='probability')
+
+plot_bar(melted_df, 'intervals', 'probability', color='genre', color_map=color_map,
          title=f'Mean Interval Direction Distribution Probability by Genre', sort=False)
 
+
 # """==========================interval transition=========================="""
-df['iv_dist2'] = df['iv_dist2'].apply(restore_matrix_from_str)
-plot_transition_heatmap('pop', 'iv_dist2', 'Blues',
-                        'Interval Transition Heatmap of Pop Dataset', intervals, tick_labels=tick_labels)
-plot_transition_heatmap('classical', 'iv_dist2', 'Oranges',
-                        'Interval Transition Heatmap of Classical Dataset', intervals, tick_labels=tick_labels)
+mean_ivdist2 = df_dict['interval_transition_dist']
+plot_transition_heatmap(mean_ivdist2['pop'], 'Blues',
+                        'Interval Transition Heatmap of Pop Dataset', mean_ivdist2['labels'],
+                        tick_labels=tick_labels)
+plot_transition_heatmap(mean_ivdist2['classical'], 'Oranges',
+                        'Interval Transition Heatmap of Classical Dataset', mean_ivdist2['labels'],
+                        tick_labels=tick_labels)
+
 
 # """==========================complexity & originality & gradus=========================="""
 features = ['complexity', 'originality', 'gradus']
 
 fig = make_subplots(rows=1, cols=3)
-
 for i, feature in enumerate(features):
     pop_data = df_pop[feature].dropna()
     classical_data = df_classical[feature].dropna()

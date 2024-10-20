@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.core.files.storage import default_storage
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -28,6 +29,13 @@ class Music(models.Model):
     complexity = models.FloatField(null=True, blank=True)
     originality = models.FloatField(null=True, blank=True)
     gradus = models.FloatField(null=True, blank=True)
+    duration = models.FloatField(null=True, blank=True)
+    pc_dist1 = ArrayField(models.FloatField(), size=12, null=True, blank=True)
+    pc_dist2 = ArrayField(ArrayField(models.FloatField(), size=12), size=12, null=True, blank=True)
+    iv_dist1 = ArrayField(models.FloatField(), size=25, null=True, blank=True)
+    ivsize_dist1 = ArrayField(models.FloatField(), size=13, null=True, blank=True)
+    ivdir_dist1 = ArrayField(models.FloatField(), size=12, null=True, blank=True)
+    iv_dist2 = ArrayField(ArrayField(models.FloatField(), size=25), size=25, null=True, blank=True)
 
     class Meta:
         verbose_name = "Music Track"
