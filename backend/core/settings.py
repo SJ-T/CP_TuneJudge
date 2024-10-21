@@ -121,6 +121,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SUPER_USER = os.environ.get('SUPER_USER')
+SUPER_PASS = os.environ.get('SUPER_PASS')
+
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
 GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
