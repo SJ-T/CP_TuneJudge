@@ -4,6 +4,7 @@ services:
     env: python
     buildCommand: |
       pip install -r requirements.txt
+      echo "Dependencies installed"
       python manage.py loaddata data.json
       python manage.py create_superuser
     startCommand: gunicorn core.wsgi:application
