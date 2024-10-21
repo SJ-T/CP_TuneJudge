@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = env.str('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = env.bool('DEBUG')
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']

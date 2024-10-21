@@ -12,9 +12,6 @@ psycopg2==2.9.9
 google-api-python-client==2.149.0
 google-cloud-storage==2.18.2
 
-# Streamlit
-streamlit==1.39.0
-
 # Data processing and visualization
 numpy==2.1.0
 pandas==2.2.2
