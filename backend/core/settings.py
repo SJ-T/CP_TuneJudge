@@ -13,7 +13,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env.str('SECRET_KEY')
 DEBUG = env.bool('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
 
 # Application definition
@@ -145,4 +145,7 @@ WAV_FILE_PATH = env('WAV_FILE_PATH')
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8501",
+
 ]
+
+API_BASE_URL = os.environ.get('API_BASE_URL', 'http://localhost:8000/api/')

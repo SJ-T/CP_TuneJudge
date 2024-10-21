@@ -21,14 +21,6 @@ services:
         sync: false
       - key: GS_CREDENTIALS
         sync: false
-  - type: web
-    name: streamlit-frontend
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run frontend/Home.py
-    envVars:
-      - key: API_BASE_URL
-        value: "https://your-django-backend-url.onrender.com"
 
 databases:
   - name: tune-judge-db
