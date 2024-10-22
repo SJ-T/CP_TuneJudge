@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 from frontend.utils import load_data, plot_histogram, plot_bar, plot_transition_heatmap
 
 
-st.set_page_config(layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(layout='centered', initial_sidebar_state='collapsed')
 
 df_dict = load_data()
 df = df_dict['origin_df']
@@ -42,7 +42,7 @@ plot_histogram(df, 'npvi', 'Histogram of nPVI(normalised Pairwise Variability In
                color_discrete_map=color_map, opacity=0.75, marginal='box')
 
 # Violin plot
-fig_npvi_violin = px.violin(df, y='npvi', x='genre', color='genre', box=True, points="all",
+fig_npvi_violin = px.violin(df, y='npvi', x='genre', color='genre', box=True, points='all',
                               title='nPVI Distribution by Genre',
                               color_discrete_map=color_map)
 fig_npvi_violin.update_layout(legend=dict(x=0.87, y=0.95, bgcolor='rgba(255, 255, 255, 0.5)'))
@@ -60,7 +60,7 @@ st.write('Are higher densities associated with more rhythmic variability in clas
 fig_nd_npvi = px.scatter(df, x='note_density', y='npvi', color='genre', opacity=0.75,
                          title='nPVI vs Note Density by Genre',
                          labels={'npvi': 'nPVI', 'note_density': 'note density'},
-                         trendline="ols", trendline_scope="trace",
+                         trendline='ols', trendline_scope='trace',
                          color_discrete_map=color_map)
 st.plotly_chart(fig_nd_npvi)
 
@@ -68,7 +68,7 @@ st.write('Are longer songs with more rhythmic variability in classical vs. pop?'
 fig_dur_npvi = px.scatter(df, x='duration', y='npvi', color='genre', opacity=0.75,
                           title='nPVI vs Duration by Genre',
                           labels={'duration': 'duration', 'npvi': 'npvi'},
-                          trendline="ols", trendline_scope="trace",
+                          trendline='ols', trendline_scope='trace',
                           color_discrete_map=color_map)
 st.plotly_chart(fig_dur_npvi)
 
@@ -169,7 +169,7 @@ for i, feature in enumerate(features):
 
     fig.update_xaxes(title_text=feature, row=1, col=i + 1)
 
-fig.update_layout(title_text="Histograms of Complexity, Originality, and Gradus(Melodiousness) by Genre",
+fig.update_layout(title_text='Histograms of Complexity, Originality, and Gradus(Melodiousness) by Genre',
                   barmode='overlay', showlegend=True, legend=dict(x=1, y=1),
                   height=500, width=1000)
 st.plotly_chart(fig)
