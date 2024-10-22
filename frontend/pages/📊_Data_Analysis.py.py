@@ -3,7 +3,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from plotly.subplots import make_subplots
-from frontend.utils import load_data, plot_histogram, plot_bar, plot_transition_heatmap
+from utils import load_data, plot_histogram, plot_bar, plot_transition_heatmap
 
 
 st.set_page_config(layout='centered', initial_sidebar_state='collapsed')

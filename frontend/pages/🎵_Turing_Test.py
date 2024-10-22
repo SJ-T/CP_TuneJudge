@@ -2,8 +2,8 @@ import requests
 import streamlit as st
 import time
 
-from frontend.components.custom_audio_player import custom_audio_player
-from frontend.utils import fetch_random_music, submit_rating, load_css
+from components.custom_audio_player import custom_audio_player
+from utils import fetch_random_music, submit_rating, load_css
 
 
 st.set_page_config(layout='wide', initial_sidebar_state='collapsed')

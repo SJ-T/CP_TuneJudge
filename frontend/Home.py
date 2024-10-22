@@ -4,9 +4,9 @@ import sys
 from pathlib import Path
 from utils import load_css
 
-project_root = Path(__file__).resolve().parent.parent
-sys.path.append(str(project_root))
-
+# project_root = Path(__file__).resolve().parent.parent
+# sys.path.append(str(project_root))
+# print(f'project_root:{project_root}')
 st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
 load_css()
 
