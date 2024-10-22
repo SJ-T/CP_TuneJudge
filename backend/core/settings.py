@@ -142,8 +142,13 @@ EXP_FEATURES_PATH = os.environ.get('EXP_FEATURES_PATH')
 WAV_FILE_PATH = os.environ.get('WAV_FILE_PATH')
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8501",
-
+    origin.strip()
+    for origin in os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:8501').split(',')
+]
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'OPTIONS',
 ]
 
 API_BASE_URL = os.environ.get('API_BASE_URL', 'http://localhost:8000/api/')
