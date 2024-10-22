@@ -3,12 +3,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from plotly.subplots import make_subplots
-from frontend.utils import load_music_data, plot_histogram, plot_bar, plot_transition_heatmap
+from frontend.utils import load_data, plot_histogram, plot_bar, plot_transition_heatmap
 
 
 st.set_page_config(layout="centered", initial_sidebar_state="collapsed")
 
-df_dict = load_music_data()
+df_dict = load_data()
 df = df_dict['origin_df']
 df_pop = df[df['genre'] == 'pop']
 df_classical = df[df['genre'] == 'classical']

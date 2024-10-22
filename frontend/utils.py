@@ -8,14 +8,14 @@ import streamlit as st
 from config import API_BASE_URL
 
 
-def load_css(file_path='frontend/static/style.css'):
+def load_css(file_path='static/style.css'):
     with open(file_path) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
 """data analysis"""
 @st.cache_data
-def load_music_data():
+def load_data():
     response = requests.get('http://localhost:8000/api/feature-analysis/')
     data = response.json()
     df_dict = {}

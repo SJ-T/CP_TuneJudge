@@ -2,7 +2,7 @@ import streamlit.components.v1 as components
 
 
 def custom_audio_player(audio_url=None):
-    with open('frontend/static/style.css', 'r') as f:
+    with open('static/style.css', 'r') as f:
         css = f'<style>{f.read()}</style>'
     custom_html = f"""
     <!DOCTYPE html>
