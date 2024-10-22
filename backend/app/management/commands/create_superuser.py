@@ -4,8 +4,19 @@ from django.conf import settings
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        if not User.objects.filter(username="admin").exists():
-            User.objects.create_superuser("admin", settings.SUPER_USER, settings.SUPER_PASS)
-            self.stdout.write(self.style.SUCCESS('Superuser created successfully'))
+        if not User.objects.filter(is_superuser=True).exists():
+            try:
+                username = settings.SUPER_USER
+                email = settings.SUPER_EMAIL
+                password = settings.SUPER_PASS
+
+                if not all([username, email, password]):
+                    self.stdout.write('Environment variables for superuser not set properly')
+                    return
+
+                User.objects.create_superuser(username, email, password)
+                self.stdout.write('Superuser created successfully')
+            except Exception as e:
+                self.stdout.write(f'Failed to create superuser: {str(e)}')
         else:
-            self.stdout.write(self.style.SUCCESS('Superuser already exists'))
+            self.stdout.write('Superuser already exists')

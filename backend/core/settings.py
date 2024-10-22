@@ -122,6 +122,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SUPER_USER = os.environ.get('SUPER_USER')
+SUPER_EMAIL = os.environ.get('SUPER_EMAIL')
 SUPER_PASS = os.environ.get('SUPER_PASS')
 
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
