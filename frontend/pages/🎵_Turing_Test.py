@@ -32,7 +32,7 @@ if st.button('Submit Rating'):
     try:
         result = submit_rating(st.session_state.random_track['id'], rating)
         st.success('Rating submitted successfully!')
-
+        st.info('Up next: Moving to the next song...')
         time.sleep(1)
         st.session_state.random_track = fetch_random_music()
         st.rerun()

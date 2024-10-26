@@ -14,6 +14,18 @@ def load_css(file_path='static/style.css'):
 
 
 """data analysis"""
+def change_container_width(percentage: int):
+    css = f"""
+    <style>
+    .stMainBlockContainer {{
+        max-width: {percentage}%;
+        margin: 0 auto;
+    }}
+    </style>
+    """
+    st.markdown(css, unsafe_allow_html=True)
+
+
 @st.cache_data
 def load_data():
     response = requests.get(f'{API_BASE_URL}feature-analysis/')
@@ -32,11 +44,10 @@ def load_data():
     return df_dict
 
 
-def plot_histogram(data, x_col, title, xaxis_title=None, color=None, **kwargs):
-    fig = px.histogram(data, x=x_col, title=title, color=color, **kwargs)
+def plot_histogram(data, x_col, title, xaxis_title=None, color=None, histnorm='probability', **kwargs):
+    fig = px.histogram(data, x=x_col, title=title, color=color, histnorm=histnorm, **kwargs)
     if xaxis_title:
         fig.update_layout(xaxis_title=xaxis_title)
-    fig.update_layout(legend=dict(x=0.87, y=0.95, bgcolor='rgba(255, 255, 255, 0.5)'))
     st.plotly_chart(fig)
 
 
@@ -74,6 +85,37 @@ def plot_transition_heatmap(df, color_scale, title, labels, **kwargs):
         fig.update_xaxes(tickvals=list(range(len(tick_labels))), ticktext=list(tick_labels))
         fig.update_yaxes(tickvals=list(range(len(tick_labels))), ticktext=list(tick_labels)[::-1])
     st.plotly_chart(fig)
+
+
+def plot_pie(df, label: str, value: str, **kwargs):
+    colors = ['gold', 'lightgreen']
+    fig = go.Figure(
+        data=[
+            go.Pie(
+                labels=df[label],
+                values=df[value],
+                textfont_size=20,
+                marker=dict(colors=colors, pattern=dict(shape=['.', 'x'])),
+                hovertemplate='%{label}<br>count: %{value}<br>%{percent}<extra></extra>',
+                title=kwargs.get('title'),
+            )
+        ]
+    )
+    st.plotly_chart(fig)
+
+
+def classify_key_type(df: pd.DataFrame):
+    major_keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    minor_keys = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b']
+    key_dist = pd.DataFrame({
+        'key_type': ['Major', 'Minor'],
+        'count': [
+            df['key'].isin(major_keys).sum(),
+            df['key'].isin(minor_keys).sum()
+        ]
+    })
+    return key_dist
+
 
 
 """turing test"""
