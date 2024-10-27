@@ -281,11 +281,11 @@ with tab3:
     col1, col2 = st.columns([1, 1])
     with col1:
         plot_bar(mean_pcdist1, x_axis='pitch_classes', y_axis='pop',
-                 title=f'Mean Pitch Class Distribution Probability of {'pop'.capitalize()} Dataset',
+                 title='Mean Pitch Class Distribution Probability of Pop Dataset',
                  color=[color_map['pop']], x_label='pitch class')
     with col2:
         plot_bar(mean_pcdist1, x_axis='pitch_classes', y_axis='classical',
-                 title=f'Mean Pitch Class Distribution Probability of {'classical'.capitalize()} Dataset',
+                 title='Mean Pitch Class Distribution Probability of Classical Dataset',
                  color=[color_map['classical']], x_label='pitch class')
     st.write("""
     ##### Findings
