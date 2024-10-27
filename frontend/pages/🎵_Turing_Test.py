@@ -28,7 +28,7 @@ rating_labels = {
 
 st.write(f'Your rating: {rating} - {rating_labels[rating]}')
 
-if st.button('Submit Rating'):
+if st.button('Submit Rating', type='primary'):
     try:
         result = submit_rating(st.session_state.random_track['id'], rating)
         st.success('Rating submitted successfully!')
