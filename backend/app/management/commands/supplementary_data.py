@@ -5,6 +5,7 @@ from app.models import Music
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
+
 class Command(BaseCommand):
     help = 'Populate array fields from string representations'
 

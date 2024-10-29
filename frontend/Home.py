@@ -1,7 +1,5 @@
 import streamlit as st
-import sys
 
-from pathlib import Path
 from utils import load_css
 
 

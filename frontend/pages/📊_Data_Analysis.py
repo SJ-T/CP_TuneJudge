@@ -3,7 +3,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from plotly.subplots import make_subplots
-from utils import load_data, plot_histogram, plot_bar, plot_transition_heatmap, classify_key_type, plot_pie, change_container_width
+from utils import (load_data, plot_histogram, plot_bar, plot_transition_heatmap, classify_key_type, plot_pie,
+                   change_container_width)
 
 
 st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
@@ -144,8 +145,7 @@ with tab2:
     with col2:
         # violin plot
         fig_npvi_violin = px.violin(df, y='npvi', x='genre', color='genre', box=True, points='all',
-                                      title='nPVI Distribution by Genre',
-                                      color_discrete_map=color_map)
+                                    title='nPVI Distribution by Genre', color_discrete_map=color_map)
         fig_npvi_violin.update_traces(marker=dict(size=3))
         fig_npvi_violin.update_layout(legend=dict(x=0.87, y=0.95))
         st.plotly_chart(fig_npvi_violin)
@@ -200,7 +200,8 @@ with tab2:
     ##### Findings
     - Notes per beat typically fall between 2-10, with most concentrated between 4-7
     - Both genres show a negative correlation between note density and nPVI，as note density increases, rhythmic 
-    variability (nPVI) tends to decrease, while classical shows a steeper negative slope, suggesting stronger correlation.
+    variability (nPVI) tends to decrease, while classical shows a steeper negative slope, suggesting stronger 
+    correlation.
     - Higher note densities generally correspond to more regular rhythmic patterns (lower nPVI), this might reflect 
     practical limitations in performing complex rhythms at high note densities
     - Classical music shows greater variability in both measures, while pop music tends to cluster more tightly around 
@@ -307,9 +308,10 @@ with tab3:
                                 'Pitch Transition Heatmap of Classical Dataset', mean_pcdist2['labels'])
     st.write("""
     ##### Findings
-    - Classical music has stronger probabilities (up to 0.04) compared to Pop (up to 0.02), and classical music shows more 
-    concentrated transition patterns, while pop music displays more diffused transitions.
-    - Classical music shows strong diagonal-adjacent patterns, indicating stepwise motion (moving to neighboring pitches)
+    - Classical music has stronger probabilities (up to 0.04) compared to Pop (up to 0.02), and classical music shows 
+    more concentrated transition patterns, while pop music displays more diffused transitions.
+    - Classical music shows strong diagonal-adjacent patterns, indicating stepwise motion (moving to neighboring 
+    pitches)
     - Pop music's more evenly distributed transitions suggest a more varied chord progressions and less strict adherence
      to traditional music composition rules. 
     """)
@@ -331,7 +333,7 @@ with tab4:
 
     melted_df = mean_ivdist1.melt(id_vars='intervals', var_name='genre', value_name='probability')
     plot_bar(melted_df, x_axis='intervals', y_axis='probability', color='genre', color_map=color_map,
-             title=f'Mean Interval Distribution Probability by Genre', sort=False)
+             title='Mean Interval Distribution Probability by Genre', sort=False)
     st.write("""
     ##### Findings
     - Pop music shows two more pronounced peaks at ascending and descending major seconds (±M2), while classical music 
@@ -349,19 +351,18 @@ with tab4:
     col1, col2 = st.columns([1, 1])
     with col1:
         # interval size
-        intervals_without_directions = ['P1', 'MI2', 'MA2', 'MI3', 'MA3', 'P4', 'D5', 'P5', 'MI6', 'MA6', 'MI7', 'MA7', 'P8']
         mean_ivsizedist1 = df_dict['interval_size_dist']
         melted_df = mean_ivsizedist1.melt(id_vars='intervals', var_name='genre', value_name='probability')
 
         plot_bar(melted_df, 'intervals', 'probability', color='genre', color_map=color_map,
-                 title=f'Mean Interval Size Distribution Probability by Genre', sort=False)
+                 title='Mean Interval Size Distribution Probability by Genre', sort=False)
     with col2:
         # interval direction
         mean_ivdirdist1 = df_dict['interval_dir_dist']
         melted_df = mean_ivdirdist1.melt(id_vars='intervals', var_name='genre', value_name='probability')
 
         plot_bar(melted_df, 'intervals', 'probability', color='genre', color_map=color_map,
-                 title=f'Mean Interval Direction Distribution Probability by Genre', sort=False)
+                 title='Mean Interval Direction Distribution Probability by Genre', sort=False)
     st.write("""
     ##### Findings
     - Both genres show decreasing probabilities as interval size increases after major seconds.
@@ -421,7 +422,8 @@ with tab5:
                          showlegend=True if i == 0 else False), row=1, col=i + 1
         )
         fig.add_trace(
-            go.Histogram(x=classical_data, name='Classical', histnorm='probability', marker_color=color_map['classical'],
+            go.Histogram(x=classical_data, name='Classical', histnorm='probability',
+                         marker_color=color_map['classical'],
                          opacity=0.75, showlegend=True if i == 0 else False), row=1, col=i + 1
         )
         fig.update_xaxes(title_text=feature, row=1, col=i + 1)
@@ -483,8 +485,8 @@ with tab5:
     ##### Findings
     - Complexity:
         - Pop music tends to cluster around a lower complexity score (centered around 5-6), classical music shows hight 
-        complexity overall, and two distribution have minimal overlap, suggesting a clear distinction in complexity between 
-        the genres. In the 3D scatter plot, this distinction on the complexity axis can be clearly observed.
+        complexity overall, and two distribution have minimal overlap, suggesting a clear distinction in complexity 
+        between the genres. In the 3D scatter plot, this distinction on the complexity axis can be clearly observed.
     - Originality:
         - Both genres show some right skew in the originality distribution, classical music has a higher score overall 
         and the cluster is concentrated around 7-9, while pop music has a more scattered originality score ranging from 
@@ -502,4 +504,3 @@ with tab5:
         processed by listeners, requiring fewer "mental calculations". In contrast, classical music frequently uses 
         complex harmonic structures, modulations, and intricate melodic patterns that require more mental processing.
     """)
-
