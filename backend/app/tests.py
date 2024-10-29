@@ -1,13 +1,12 @@
 import json
 
-from app.api.serializers import MusicSerializer, RatingSerializer
+from app.api.serializers import RatingSerializer
 from app.models import Music, Rating
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-
 
 
 # test models
@@ -49,6 +48,7 @@ class RatingModelTests(TestCase):
         rating = Rating.objects.create(song=self.music, rating=4)
         self.music.delete()
         self.assertFalse(Rating.objects.filter(id=rating.id).exists())
+
 
 # test views
 class MusicViewSetTests(TestCase):
@@ -135,9 +135,11 @@ class RatingViewSetTests(TestCase):
 
 class MusicAnalysisDataTests(TestCase):
     fixtures = ['test_music_data.json']
+
     def setUp(self):
         self.fields = ['origin_df', 'pitch_class_dist', 'pitch_transition_dist', 'interval_dist', 'interval_size_dist',
                        'interval_dir_dist', 'interval_transition_dist']
+
     def test_music_analysis_data_success(self):
         response = self.client.get(reverse('feature-analysis'))
         self.assertEqual(response.status_code, 200)

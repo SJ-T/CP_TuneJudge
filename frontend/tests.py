@@ -6,17 +6,21 @@ from streamlit.testing.v1 import AppTest
 from unittest.mock import patch, MagicMock
 from utils import fetch_random_music, submit_rating, load_data
 
+
 @pytest.fixture
 def mock_random_track():
     return {'id': 1, 'title': 'Test Song', 'file': 'test.wav', 'label': 'pop'}
+
 
 @pytest.fixture
 def rating_payload():
     return {'song': 1, 'rating': 4}
 
+
 @pytest.fixture
 def mock_rating_response():
     return {'id': 1, 'song': 1, 'rating': 4, 'created_at': '2024-10-28T10:00:00Z'}
+
 
 @pytest.fixture
 def mock_analysis_data():
@@ -33,9 +37,7 @@ def mock_analysis_data():
         }
     }
 
-@pytest.fixture
-def mock_features_data():
-    return get_mock_data()
+
 # test Home page
 def test_home_page():
     at = AppTest.from_file('Home.py').run()
@@ -57,6 +59,7 @@ def test_turing_test_page(mock_fetch_random_music, mock_random_track):
     assert 'Submit Rating' in at.button[0].label
     assert 'Skip to Next Song' in at.button[1].label
 
+
 @patch('utils.fetch_random_music')
 @patch('utils.submit_rating')
 def test_rating_submission(mock_submit_rating, mock_fetch_random_music, mock_random_track, mock_rating_response,
@@ -74,6 +77,7 @@ def test_rating_submission(mock_submit_rating, mock_fetch_random_music, mock_ran
     assert 'Rating submitted successfully!' in at.success[0].value
     assert 'Up next: Moving to the next track...' in at.info[0].value
 
+
 @patch('utils.fetch_random_music')
 @patch('utils.submit_rating')
 def test_rating_submission_error(mock_submit_rating, mock_fetch_random_music, mock_random_track):
@@ -86,6 +90,7 @@ def test_rating_submission_error(mock_submit_rating, mock_fetch_random_music, mo
     at = AppTest.from_file('pages/🎵_Turing_Test.py').run()
     at.button[0].click().run()
     assert 'Invalid request' in at.error[0].value
+
 
 @patch('utils.fetch_random_music')
 @patch('utils.submit_rating')
@@ -100,6 +105,7 @@ def test_rating_submission_404(mock_submit_rating, mock_fetch_random_music, mock
     at = AppTest.from_file('pages/🎵_Turing_Test.py').run()
     at.button[0].click().run()
     assert 'Song not found' in at.error[0].value
+
 
 @patch('utils.fetch_random_music')
 def test_skip_song(mock_fetch_random_music, mock_random_track):
@@ -117,12 +123,14 @@ def test_fetch_random_music_endpoint(mock_get, mock_random_track):
     result = fetch_random_music()
     assert result == mock_random_track
 
+
 @patch('requests.post')
 def test_submit_rating_endpoint(mock_post, rating_payload, mock_rating_response):
     mock_post.return_value.json.return_value = mock_rating_response
 
     result = submit_rating(rating_payload['song'], rating_payload['rating'])
     assert result == mock_rating_response
+
 
 @patch('requests.get')
 def test_load_data(mock_get, mock_analysis_data):

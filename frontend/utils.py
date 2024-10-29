@@ -13,7 +13,7 @@ def load_css(file_path='static/style.css'):
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 
-"""data analysis"""
+# data analysis
 def change_container_width(percentage: int):
     css = f"""
     <style>
@@ -117,8 +117,7 @@ def classify_key_type(df: pd.DataFrame):
     return key_dist
 
 
-
-"""turing test"""
+# turing test
 def fetch_random_music():
     response = requests.get(f'{API_BASE_URL}music/random/')
     response.raise_for_status()

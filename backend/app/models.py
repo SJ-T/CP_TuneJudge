@@ -3,6 +3,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.files.storage import default_storage
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 class Music(models.Model):
     LABEL_CHOICES = [
         ('classical', 'Classical'),
@@ -60,4 +61,3 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"Rating {self.rating} for {self.song.file}"
-
