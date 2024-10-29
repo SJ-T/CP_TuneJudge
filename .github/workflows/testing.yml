@@ -37,7 +37,7 @@ jobs:
     - name: Lint
       run: |
         pip install flake8
-        flake8 backend frontend
+        flake8 backend frontend --config=.flake8
 
     - name: Backend test
       env:
