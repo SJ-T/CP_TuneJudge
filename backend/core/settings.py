@@ -7,13 +7,12 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = env.str('SECRET_KEY')
-DEBUG = env.bool('DEBUG')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(' ')
 
 
 # Application definition
@@ -71,23 +70,21 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default=''),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST', default='localhost'),
+        'PORT': os.environ.get('DB_PORT', default=''),
     }
 }
 
 if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.config(
-        conn_max_age=600,
-        ssl_require=False,
-    )
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    DATABASES['default'] = dj_database_url.parse(DATABASE_URL)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -108,41 +105,50 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DEFAULT_FILE_STORAGE = env('DEFAULT_FILE_STORAGE')
-GS_PROJECT_ID = env('GS_PROJECT_ID')
-GS_BUCKET_NAME = env('GS_BUCKET_NAME')
+SUPER_USER = os.environ.get('SUPER_USER')
+SUPER_EMAIL = os.environ.get('SUPER_EMAIL')
+SUPER_PASS = os.environ.get('SUPER_PASS')
+
+DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
+GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
+GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    env('GS_CREDENTIALS')
+    os.environ.get('GS_CREDENTIALS')
 )
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STORAGES = {
-    "default": {"BACKEND": DEFAULT_FILE_STORAGE},
-    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    'default': {'BACKEND': DEFAULT_FILE_STORAGE},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
 
-DATASET_FEATURES_PATH = env('DATASET_FEATURES_PATH')
-EXP_FEATURES_PATH = env('EXP_FEATURES_PATH')
-WAV_FILE_PATH = env('WAV_FILE_PATH')
+DATASET_FEATURES_PATH = os.environ.get('DATASET_FEATURES_PATH')
+EXP_FEATURES_PATH = os.environ.get('EXP_FEATURES_PATH')
+WAV_FILE_PATH = os.environ.get('WAV_FILE_PATH')
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8501",
+    origin.strip()
+    for origin in os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:8501').split(',')
 ]
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'OPTIONS',
+]
+
+API_BASE_URL = os.environ.get('API_BASE_URL', 'http://localhost:8000/api/')

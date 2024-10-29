@@ -28,10 +28,6 @@ class Command(BaseCommand):
         csv_path_exp = settings.EXP_FEATURES_PATH
         df = pd.concat([pd.read_csv(csv_path_ds), pd.read_csv(csv_path_exp)], ignore_index=True)
         for _, row in df.iterrows():
-            if row['genre'] != 'pop':
-                continue
-            if row['pc_dist2'] == '[]':
-                continue
             music, created = Music.objects.get_or_create(
                 title=row['file_name'],
                 label=row['genre']

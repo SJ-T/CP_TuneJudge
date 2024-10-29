@@ -19,7 +19,7 @@ class MusicSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ['id', 'song', 'rating','created_at']
+        fields = ['id', 'song', 'rating', 'created_at']
         read_only_fields = ['id', 'created_at']
 
     def validate_rating(self, value):
