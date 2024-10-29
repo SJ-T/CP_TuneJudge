@@ -1,3 +1,6 @@
 /.idea/
 .env
 gcs_credentials.json
+.DS_Store
+__pycache__/
+*.pyc
