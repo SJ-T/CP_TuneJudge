@@ -124,18 +124,23 @@ SUPER_USER = os.environ.get('SUPER_USER', None)
 SUPER_EMAIL = os.environ.get('SUPER_EMAIL', None)
 SUPER_PASS = os.environ.get('SUPER_PASS', None)
 
-DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE', None)
-GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', None)
-GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', None)
-if 'GS_CREDENTIALS' in os.environ:
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        os.environ.get('GS_CREDENTIALS')
-    )
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-STORAGES = {
-    'default': {'BACKEND': DEFAULT_FILE_STORAGE},
-    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
-}
+if os.environ.get('USE_GCS', False):
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', None)
+    GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', None)
+    GS_CREDENTIALS = os.environ.get('GS_CREDENTIALS', None)
+    from google.oauth2 import service_account
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS)
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    STORAGES = {
+        'default': {'BACKEND': DEFAULT_FILE_STORAGE},
+        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+    }
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 DATASET_FEATURES_PATH = os.environ.get('DATASET_FEATURES_PATH', None)
 EXP_FEATURES_PATH = os.environ.get('EXP_FEATURES_PATH', None)
