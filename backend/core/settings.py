@@ -2,7 +2,6 @@ import environ
 import os
 import dj_database_url
 
-from google.oauth2 import service_account
 from pathlib import Path
 
 
@@ -131,16 +130,16 @@ if os.environ.get('USE_GCS', False):
     GS_CREDENTIALS = os.environ.get('GS_CREDENTIALS', None)
     from google.oauth2 import service_account
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS)
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-    STORAGES = {
-        'default': {'BACKEND': DEFAULT_FILE_STORAGE},
-        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
-    }
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STORAGES = {
+    'default': {'BACKEND': DEFAULT_FILE_STORAGE},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
 
 DATASET_FEATURES_PATH = os.environ.get('DATASET_FEATURES_PATH', None)
 EXP_FEATURES_PATH = os.environ.get('EXP_FEATURES_PATH', None)
