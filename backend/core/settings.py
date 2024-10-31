@@ -12,7 +12,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split(' ')
 
 
 # Application definition
@@ -120,25 +120,26 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SUPER_USER = os.environ.get('SUPER_USER')
-SUPER_EMAIL = os.environ.get('SUPER_EMAIL')
-SUPER_PASS = os.environ.get('SUPER_PASS')
+SUPER_USER = os.environ.get('SUPER_USER', None)
+SUPER_EMAIL = os.environ.get('SUPER_EMAIL', None)
+SUPER_PASS = os.environ.get('SUPER_PASS', None)
 
-DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
-GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID')
-GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.environ.get('GS_CREDENTIALS')
-)
+DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE', None)
+GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', None)
+GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', None)
+if 'GS_CREDENTIALS' in os.environ:
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        os.environ.get('GS_CREDENTIALS')
+    )
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STORAGES = {
     'default': {'BACKEND': DEFAULT_FILE_STORAGE},
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
 
-DATASET_FEATURES_PATH = os.environ.get('DATASET_FEATURES_PATH')
-EXP_FEATURES_PATH = os.environ.get('EXP_FEATURES_PATH')
-WAV_FILE_PATH = os.environ.get('WAV_FILE_PATH')
+DATASET_FEATURES_PATH = os.environ.get('DATASET_FEATURES_PATH', None)
+EXP_FEATURES_PATH = os.environ.get('EXP_FEATURES_PATH', None)
+WAV_FILE_PATH = os.environ.get('WAV_FILE_PATH', None)
 
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
