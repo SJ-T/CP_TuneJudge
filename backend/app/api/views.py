@@ -133,16 +133,16 @@ class RatingViewSet(viewsets.ModelViewSet):
             404: Song not found
             500: Server error
         """
-        song_id = request.query_params.get('song')
-        if not song_id:
-            return Response({'error': 'Song ID is required'}, status=400)
-        if not Music.objects.filter(id=song_id).exists():
-            return Response({'error': 'Song not found'}, status=404)
-
         try:
+            song_id = request.query_params.get('song')
+            if not song_id:
+                return Response({'error': 'Song ID is required'}, status=400)
+            if not Music.objects.filter(id=song_id).exists():
+                return Response({'error': 'Song not found'}, status=404)
+
             ratings = Rating.objects.filter(song_id=song_id)
             serializer = self.get_serializer(ratings, many=True)
-            return Response(serializer.data)
+            return Response(serializer.data, status=200)
         except Exception as e:
             error_details = str(e) if not settings.DEBUG else 'An unexpected error occurred'
             return Response({'error': error_details}, status=500)
