@@ -3,4 +3,4 @@ max-line-length = 120
 exclude =
     */migrations/*
 per-file-ignores =
-    frontend/pages/📊_Data_Analysis.py:W291,W293,E501
+    frontend/pages/Data_Analysis.py:W291,W293,E501
