@@ -7,7 +7,11 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = 'Populate array fields from string representations'
+    """
+    Django management command to populate the database with music feature data generated using Muspy and MGEval
+    libraries.
+    Processes string representations of arrays into proper database format.
+    """
 
     def process_array_field(self, value):
         if pd.isna(value):

@@ -4,6 +4,9 @@ from django.conf import settings
 
 
 class Command(BaseCommand):
+    """
+    Django management command to create a superuser account in production environment using environment variables.
+    """
     def handle(self, *args, **options):
         if not User.objects.filter(is_superuser=True).exists():
             try:

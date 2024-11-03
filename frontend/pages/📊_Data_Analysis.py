@@ -3,12 +3,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from plotly.subplots import make_subplots
-from utils import (load_data, plot_histogram, plot_bar, plot_transition_heatmap, classify_key_type, plot_pie,
+from utils import (no_header, load_data, plot_histogram, plot_bar, plot_transition_heatmap, classify_key_type, plot_pie,
                    change_container_width)
 
 
 st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
 change_container_width(75)
+no_header()
 
 df_dict = load_data()
 df = df_dict['origin_df']
