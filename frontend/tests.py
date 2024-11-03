@@ -43,13 +43,13 @@ def test_home_page():
     at = AppTest.from_file('Home.py').run()
     assert not at.exception
     assert at.title[0].value == 'Tune Judge'
-    assert "Use the sidebar" in at.markdown[1].value
+    assert 'Use the sidebar' in at.markdown[1].value
 
 
 # test Turing_Test page
 @patch('utils.fetch_random_music')
 def test_turing_test_page(mock_fetch_random_music, mock_random_track):
-    mock_fetch_random_music.return_value = mock_random_track
+    mock_fetch_random_music.return_value = mock_random_track, None
 
     at = AppTest.from_file('pages/🎵_Turing_Test.py').run()
     assert not at.exception
@@ -61,12 +61,20 @@ def test_turing_test_page(mock_fetch_random_music, mock_random_track):
 
 
 @patch('utils.fetch_random_music')
+def test_turing_test_page_error(mock_fetch_random_music):
+    mock_fetch_random_music.return_value = None, 'Test error'
+
+    at = AppTest.from_file('pages/🎵_Turing_Test.py').run()
+    assert any('Test error' in element.value for element in at.error)
+
+
+@patch('utils.fetch_random_music')
 @patch('utils.submit_rating')
 def test_rating_submission(mock_submit_rating, mock_fetch_random_music, mock_random_track, mock_rating_response,
                            monkeypatch):
     monkeypatch.setattr('streamlit.rerun', lambda: None)
-    mock_fetch_random_music.return_value = mock_random_track
-    mock_submit_rating.return_value = mock_rating_response
+    mock_fetch_random_music.return_value = mock_random_track, None
+    mock_submit_rating.return_value = mock_rating_response, None
 
     at = AppTest.from_file('pages/🎵_Turing_Test.py').run()
     at.select_slider[0].set_value(4).run()
@@ -81,11 +89,8 @@ def test_rating_submission(mock_submit_rating, mock_fetch_random_music, mock_ran
 @patch('utils.fetch_random_music')
 @patch('utils.submit_rating')
 def test_rating_submission_error(mock_submit_rating, mock_fetch_random_music, mock_random_track):
-    mock_fetch_random_music.return_value = mock_random_track
-    mock_response = MagicMock()
-    mock_response.status_code = 400
-    mock_response.json.return_value = {'error': 'Invalid request'}
-    mock_submit_rating.side_effect = requests.HTTPError(response=mock_response)
+    mock_fetch_random_music.return_value = mock_random_track, None
+    mock_submit_rating.return_value = None, 'Invalid request'
 
     at = AppTest.from_file('pages/🎵_Turing_Test.py').run()
     at.button[0].click().run()
@@ -93,50 +98,160 @@ def test_rating_submission_error(mock_submit_rating, mock_fetch_random_music, mo
 
 
 @patch('utils.fetch_random_music')
-@patch('utils.submit_rating')
-def test_rating_submission_404(mock_submit_rating, mock_fetch_random_music, mock_random_track, monkeypatch):
-    monkeypatch.setattr('streamlit.rerun', lambda: None)
-    mock_fetch_random_music.return_value = mock_random_track
-    mock_response = MagicMock()
-    mock_response.status_code = 404
-    mock_response.json.return_value = {'error': 'Song not found'}
-    mock_submit_rating.side_effect = requests.HTTPError(response=mock_response)
-
-    at = AppTest.from_file('pages/🎵_Turing_Test.py').run()
-    at.button[0].click().run()
-    assert 'Song not found' in at.error[0].value
-
-
-@patch('utils.fetch_random_music')
 def test_skip_song(mock_fetch_random_music, mock_random_track):
-    mock_fetch_random_music.return_value = mock_random_track
+    mock_fetch_random_music.return_value = mock_random_track, None
     at = AppTest.from_file('pages/🎵_Turing_Test.py').run()
     at.button[1].click().run()
     assert at.session_state['random_track'] == mock_random_track
 
 
+# test Data_Analysis page
+@patch('utils.load_data')
+def test_page_loading_error(mock_load_data):
+    mock_load_data.return_value = None, 'Test error'
+    at = AppTest.from_file('pages/📊_Data_Analysis.py').run()
+    assert not at.tabs
+    assert any('Test error' in element.value for element in at.error)
+
+
 # test endpoint
 @patch('requests.get')
-def test_fetch_random_music_endpoint(mock_get, mock_random_track):
-    mock_get.return_value.json.return_value = mock_random_track
-
-    result = fetch_random_music()
+def test_fetch_random_music(mock_get, mock_random_track):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = mock_random_track
+    mock_get.return_value = mock_response
+    result, error = fetch_random_music()
     assert result == mock_random_track
+    assert error is None
+
+
+@patch('requests.get')
+def test_fetch_random_music_endpoint_error(mock_get):
+    mock_response = MagicMock()
+    mock_response.status_code = 500
+    mock_response.json.return_value = {'error': 'Test endpoint error'}
+    mock_get.return_value = mock_response
+    result, error = fetch_random_music()
+    assert result is None
+    assert error == 'Server returned error 500: Test endpoint error'
+
+
+@patch('requests.get')
+def test_fetch_random_music_connection_error(mock_get):
+    mock_get.side_effect = requests.ConnectionError
+    result, error = fetch_random_music()
+    assert result is None
+    assert error == 'Could not connect to the server.'
+
+
+@patch('requests.get')
+def test_fetch_random_music_request_timeout(mock_get):
+    mock_get.side_effect = requests.Timeout
+    result, error = fetch_random_music()
+    assert result is None
+    assert error == 'Request timed out. Please try again.'
+
+
+@patch('requests.get')
+def test_fetch_random_music_request_exception(mock_get):
+    mock_get.side_effect = requests.RequestException('Request Exception')
+    result, error = fetch_random_music()
+    assert result is None
+    assert error == 'Error fetching track: Request Exception'
 
 
 @patch('requests.post')
-def test_submit_rating_endpoint(mock_post, rating_payload, mock_rating_response):
-    mock_post.return_value.json.return_value = mock_rating_response
-
-    result = submit_rating(rating_payload['song'], rating_payload['rating'])
+def test_submit_rating(mock_post, rating_payload, mock_rating_response):
+    mock_response = MagicMock()
+    mock_response.status_code = 201
+    mock_response.json.return_value = mock_rating_response
+    mock_post.return_value = mock_response
+    result, error = submit_rating(rating_payload['song'], rating_payload['rating'])
     assert result == mock_rating_response
+    assert error is None
+
+
+@patch('requests.post')
+def test_submit_rating_endpoint_error(mock_post, rating_payload):
+    mock_response = MagicMock()
+    mock_response.status_code = 404
+    mock_response.json.return_value = {'error': 'Test song not found'}
+    mock_post.return_value = mock_response
+    result, error = submit_rating(rating_payload['song'], rating_payload['rating'])
+    assert result is None
+    assert error == 'Server returned error 404: Test song not found'
+
+
+@patch('requests.post')
+def test_submit_rating_connection_error(mock_post, rating_payload):
+    mock_post.side_effect = requests.ConnectionError
+    result, error = submit_rating(rating_payload['song'], rating_payload['rating'])
+    assert result is None
+    assert error == 'Could not connect to the server.'
+
+
+@patch('requests.post')
+def test_submit_rating_request_timeout(mock_post, rating_payload):
+    mock_post.side_effect = requests.Timeout
+    result, error = submit_rating(rating_payload['song'], rating_payload['rating'])
+    assert result is None
+    assert error == 'Request timed out. Please try again.'
+
+
+@patch('requests.post')
+def test_submit_rating_request_exception(mock_post, rating_payload):
+    mock_post.side_effect = requests.RequestException('Request exception')
+    result, error = submit_rating(rating_payload['song'], rating_payload['rating'])
+    assert result is None
+    assert error == 'Error submitting rating: Request exception'
 
 
 @patch('requests.get')
 def test_load_data(mock_get, mock_analysis_data):
+    load_data.clear()
     mock_get.return_value.json.return_value = mock_analysis_data
-
-    result = load_data()
+    result, error = load_data()
+    assert error is None
     assert 'origin_df' in result
     assert 'pitch_class_dist' in result
     assert isinstance(result['origin_df'], pd.DataFrame)
+
+
+@patch('requests.get')
+def test_load_data_endpoint_error(mock_get):
+    load_data.clear()
+    mock_response = MagicMock()
+    mock_response.status_code = 500
+    mock_response.json.return_value = {'error': 'Database processing failed'}
+    mock_get.return_value = mock_response
+    result, error = load_data()
+    assert result is None
+    assert error == 'Error loading data: Database processing failed'
+
+
+@patch('requests.get')
+def test_load_data_connection_error(mock_get):
+    load_data.clear()
+    mock_get.side_effect = requests.ConnectionError
+    result, error = load_data()
+    assert result is None
+    assert error == 'Could not connect to the server.'
+
+
+@patch('requests.get')
+def test_load_data_request_timeout(mock_get):
+    load_data.clear()
+    mock_get.side_effect = requests.Timeout
+    result, error = load_data()
+    assert result is None
+    assert error == 'Request timed out. Please try again.'
+
+
+@patch('requests.get')
+def test_load_data_request_exception(mock_get):
+    load_data.clear()
+    mock_get.side_effect = requests.RequestException('Request Exception')
+    result, error = load_data()
+    assert result is None
+    assert error == 'Error fetching data: Request Exception'

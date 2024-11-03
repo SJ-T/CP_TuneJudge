@@ -88,7 +88,7 @@ class RatingViewSetTests(TestCase):
 
     def create_rating(self, rating_data):
         return self.client.post(
-            reverse('rate-song'),
+            reverse('rating-rate-song'),
             data=json.dumps(rating_data),
             content_type='application/json'
         )
@@ -99,13 +99,13 @@ class RatingViewSetTests(TestCase):
 
     def test_song_ratings_endpoint(self):
         self.test_rate_song_endpoint()
-        response = self.client.get(reverse('song-ratings'), {'song': self.music.id})
+        response = self.client.get(reverse('rating-song-ratings'), {'song': self.music.id})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.json()[0]['rating'], 3)
 
     def test_get_song_ratings_without_song_id(self):
-        response = self.client.get(reverse('song-ratings'))
+        response = self.client.get(reverse('rating-song-ratings'))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.json(), {'error': 'Song ID is required'})
 
@@ -157,6 +157,14 @@ class MusicAnalysisDataTests(TestCase):
             else:
                 self.assertIn('pop', field_data)
                 self.assertIn('classical', field_data)
+
+    def test_no_music_data(self):
+        Music.objects.all().delete()
+        response = self.client.get(reverse('feature-analysis'))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'No music data available for analysis')
 
 
 # test serializers

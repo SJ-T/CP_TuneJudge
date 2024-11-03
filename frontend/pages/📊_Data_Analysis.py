@@ -3,14 +3,19 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from plotly.subplots import make_subplots
-from utils import (load_data, plot_histogram, plot_bar, plot_transition_heatmap, classify_key_type, plot_pie,
+from utils import (no_header, load_data, plot_histogram, plot_bar, plot_transition_heatmap, classify_key_type, plot_pie,
                    change_container_width)
 
 
 st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
 change_container_width(75)
+no_header()
 
-df_dict = load_data()
+df_dict, error = load_data()
+if error:
+    st.error(error)
+    st.stop()
+
 df = df_dict['origin_df']
 df_pop = df[df['genre'] == 'pop']
 df_classical = df[df['genre'] == 'classical']
@@ -302,10 +307,10 @@ with tab3:
     col1, col2 = st.columns([1, 1])
     with col1:
         plot_transition_heatmap(mean_pcdist2['pop'], 'Blues',
-                                'Pitch Transition Heatmap of Pop Dataset', mean_pcdist2['labels'])
+                                'Pitch Transition Heatmap of Pop Dataset')
     with col2:
         plot_transition_heatmap(mean_pcdist2['classical'], 'Oranges',
-                                'Pitch Transition Heatmap of Classical Dataset', mean_pcdist2['labels'])
+                                'Pitch Transition Heatmap of Classical Dataset')
     st.write("""
     ##### Findings
     - Classical music has stronger probabilities (up to 0.04) compared to Pop (up to 0.02), and classical music shows 
@@ -379,11 +384,11 @@ with tab4:
     col1, col2 = st.columns([1, 1])
     with col1:
         plot_transition_heatmap(mean_ivdist2['pop'], 'Blues',
-                                'Interval Transition Heatmap of Pop Dataset', mean_ivdist2['labels'],
+                                'Interval Transition Heatmap of Pop Dataset',
                                 tick_labels=tick_labels)
     with col2:
         plot_transition_heatmap(mean_ivdist2['classical'], 'Oranges',
-                                'Interval Transition Heatmap of Classical Dataset', mean_ivdist2['labels'],
+                                'Interval Transition Heatmap of Classical Dataset',
                                 tick_labels=tick_labels)
     st.write("""
     ##### Findings

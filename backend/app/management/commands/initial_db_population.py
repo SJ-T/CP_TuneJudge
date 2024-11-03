@@ -11,7 +11,10 @@ from app.models import Music
 
 
 class Command(BaseCommand):
-    help = 'Load music data from CSV and associate wav files'
+    """
+    Django management command to populate the database with music feature data generated using MATLAB and WAV files.
+    Loads feature data from CSV files and associates corresponding audio files.
+    """
 
     def handle(self, *args, **kwargs):
         csv_path_ds = settings.DATASET_FEATURES_PATH
@@ -23,7 +26,7 @@ class Command(BaseCommand):
             wav_file_name = row['genre'] + '_' + os.path.splitext(row['file_name'])[0] + '.wav'
             wav_file_path = os.path.join(wav_dir, row['genre'], wav_file_name)
             if not os.path.exists(wav_file_path):
-                self.stdout.write(self.style.WARNING(f"WAV file not found: {wav_file_path}"))
+                self.stdout.write(self.style.WARNING(f'WAV file not found: {wav_file_path}'))
                 continue
 
             file_name = f"{row['genre']}/{wav_file_name}"
@@ -55,7 +58,7 @@ class Command(BaseCommand):
                     originality=row.get('originality'),
                     gradus=row.get('gradus'),
                 )
-                self.stdout.write(self.style.SUCCESS(f"Created Music object: {music}"))
+                self.stdout.write(self.style.SUCCESS(f'Created Music object: {music}'))
             except IntegrityError:
                 self.stdout.write(self.style.WARNING(f"Duplicate entry, skipping: {row['file_name']}"))
             except Exception as e:

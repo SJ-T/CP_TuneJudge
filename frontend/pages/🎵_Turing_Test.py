@@ -1,4 +1,3 @@
-import requests
 import streamlit as st
 import time
 
@@ -10,7 +9,12 @@ st.set_page_config(initial_sidebar_state='collapsed')
 load_css()
 
 if 'random_track' not in st.session_state:
-    st.session_state.random_track = fetch_random_music()
+    track_data, error = fetch_random_music()
+    if error:
+        st.error(error)
+        st.stop()
+    else:
+        st.session_state.random_track = track_data
 
 custom_audio_player(st.session_state.random_track['file'])
 
@@ -29,21 +33,24 @@ rating_labels = {
 st.write(f'Your rating: {rating} - {rating_labels[rating]}')
 
 if st.button('Submit Rating', type='primary'):
-    try:
-        result = submit_rating(st.session_state.random_track['id'], rating)
+    result, error = submit_rating(st.session_state.random_track['id'], rating)
+    if error:
+        st.error(error)
+    else:
         st.success('Rating submitted successfully!')
         st.info('Up next: Moving to the next track...')
         time.sleep(1)
-        st.session_state.random_track = fetch_random_music()
-        st.rerun()
-    except requests.HTTPError as e:
-        error_data = e.response.json()
-        st.error(error_data.get('error', 'Server error. Please try again.'))
-        if e.response.status_code == 404:
-            time.sleep(1)
-            st.session_state.random_track = fetch_random_music()
+        track_data, error = fetch_random_music()
+        if error:
+            st.error(error)
+        else:
+            st.session_state.random_track = track_data
             st.rerun()
 
 if st.button('Skip to Next Song'):
-    st.session_state.random_track = fetch_random_music()
-    st.rerun()
+    track_data, error = fetch_random_music()
+    if error:
+        st.error(error)
+    else:
+        st.session_state.random_track = track_data
+        st.rerun()
