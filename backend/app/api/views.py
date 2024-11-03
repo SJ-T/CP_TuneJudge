@@ -63,7 +63,7 @@ class MusicViewSet(viewsets.ReadOnlyModelViewSet):
             random_label = choice(labels)
             random_track = Music.objects.filter(label=random_label).order_by('?').first()
             if not random_track:
-                return Response({'error': f'No tracks available'}, status=404)
+                return Response({'error': 'No tracks available'}, status=404)
             serializer = self.get_serializer(random_track)
             return Response(serializer.data, status=200)
         except Exception as e:

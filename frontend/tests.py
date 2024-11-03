@@ -59,6 +59,7 @@ def test_turing_test_page(mock_fetch_random_music, mock_random_track):
     assert 'Submit Rating' in at.button[0].label
     assert 'Skip to Next Song' in at.button[1].label
 
+
 @patch('utils.fetch_random_music')
 def test_turing_test_page_error(mock_fetch_random_music):
     mock_fetch_random_music.return_value = None, 'Test error'

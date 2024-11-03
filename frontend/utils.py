@@ -173,8 +173,8 @@ def plot_pie(df: pd.DataFrame, label: str, value: str, **kwargs):
     colors = ['gold', 'lightgreen']
     fig = go.Figure(
         data=[go.Pie(labels=df[label], values=df[value], textfont_size=20, title=kwargs.get('title'),
-                marker=dict(colors=colors, pattern=dict(shape=['.', 'x'])),
-                hovertemplate='%{label}<br>count: %{value}<br>%{percent}<extra></extra>')])
+                     marker=dict(colors=colors, pattern=dict(shape=['.', 'x'])),
+                     hovertemplate='%{label}<br>count: %{value}<br>%{percent}<extra></extra>')])
     st.plotly_chart(fig)
 
 
