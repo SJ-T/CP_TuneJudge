@@ -5,7 +5,7 @@ from components.custom_audio_player import custom_audio_player
 from utils import fetch_random_music, submit_rating, load_css
 
 
-st.set_page_config(initial_sidebar_state='collapsed')
+st.set_page_config(initial_sidebar_state='collapsed', page_icon=':musical_note:')
 load_css()
 
 if 'random_track' not in st.session_state:

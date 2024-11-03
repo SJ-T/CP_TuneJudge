@@ -7,7 +7,7 @@ from utils import (no_header, load_data, plot_histogram, plot_bar, plot_transiti
                    change_container_width)
 
 
-st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
+st.set_page_config(layout='wide', initial_sidebar_state='collapsed', page_icon=':bar_chart:')
 change_container_width(75)
 no_header()
 
