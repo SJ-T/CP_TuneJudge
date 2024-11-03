@@ -52,20 +52,38 @@ def no_header():
 
 @st.cache_data
 def load_data():
-    response = requests.get(f'{API_BASE_URL}feature-analysis/')
-    data = response.json()
-    df_dict = {}
-    for key, value in data.items():
-        if key in ['origin_df', 'pitch_class_dist', 'interval_dist', 'interval_size_dist', 'interval_dir_dist']:
-            df_dict[key] = pd.DataFrame(value)
-        elif key in ['pitch_transition_dist', 'interval_transition_dist']:
-            df_dict[key] = {
-                genre: pd.DataFrame(data) for genre, data in value.items() if genre != 'labels'
-            }
-            df_dict[key]['labels'] = value['labels']
-        else:
-            df_dict[key] = value
-    return df_dict
+    """
+    Fetches and processes music analysis data from the API.
+    Uses Streamlit caching for performance.
+    Returns:
+        tuple: (processed_data, error_message)
+            - processed_data: Dictionary of processed music data if successful
+            - error_message: Error description if fetch fails
+    """
+    try:
+        response = requests.get(f'{API_BASE_URL}feature-analysis/')
+        data = response.json()
+        if 'error' in data:
+            return None, f"Error loading data: {data['error']}"
+
+        df_dict = {}
+        for key, value in data.items():
+            if key in ['origin_df', 'pitch_class_dist', 'interval_dist', 'interval_size_dist', 'interval_dir_dist']:
+                df_dict[key] = pd.DataFrame(value)
+            elif key in ['pitch_transition_dist', 'interval_transition_dist']:
+                df_dict[key] = {
+                    genre: pd.DataFrame(data) for genre, data in value.items() if genre != 'labels'
+                }
+                df_dict[key]['labels'] = value['labels']
+            else:
+                df_dict[key] = value
+        return df_dict, None
+    except requests.ConnectionError:
+        return None, 'Could not connect to the server.'
+    except requests.Timeout:
+        return None, 'Request timed out. Please try again.'
+    except requests.RequestException as e:
+        return None, f'Error fetching data: {str(e)}'
 
 
 def plot_histogram(df: pd.DataFrame, x_col, title, xaxis_title=None, color=None, histnorm='probability', **kwargs):
@@ -186,12 +204,49 @@ def classify_key_type(df: pd.DataFrame):
 
 # turing test
 def fetch_random_music():
-    response = requests.get(f'{API_BASE_URL}music/random/')
-    response.raise_for_status()
-    return response.json()
+    """
+    Fetches a random music track from the API.
+    Returns:
+        tuple: (track_data, error_message)
+            - track_data: Dictionary of track information if successful
+            - error_message: Error description if fetch fails
+    """
+    try:
+        response = requests.get(f'{API_BASE_URL}music/random/')
+        if response.status_code == 200:
+            return response.json(), None
+        error = response.json()
+        error_message = error.get('error', 'Unknown error occurred')
+        return None, f'Server returned error {response.status_code}: {error_message}'
+    except requests.ConnectionError:
+        return None, 'Could not connect to the server.'
+    except requests.Timeout:
+        return None, 'Request timed out. Please try again.'
+    except requests.RequestException as e:
+        return None, f'Error fetching track: {str(e)}'
 
 
 def submit_rating(song_id, rating):
-    response = requests.post(f'{API_BASE_URL}ratings/rate_song/', json={'song': song_id, 'rating': rating})
-    response.raise_for_status()
-    return response.json()
+    """
+    Submits a rating for a music track to the API.
+    Args:
+        song_id: ID of the rated song
+        rating: Rating value (1-5)
+    Returns:
+        tuple: (response_data, error_message)
+            - response_data: Response from server if successful
+            - error_message: Error description if submission fails
+    """
+    try:
+        response = requests.post(f'{API_BASE_URL}ratings/rate_song/', json={'song': song_id, 'rating': rating})
+        if response.status_code == 201:
+            return response.json(), None
+        error = response.json()
+        error_message = error.get('error', 'Unknown error occurred')
+        return None, f'Server returned error {response.status_code}: {error_message}'
+    except requests.ConnectionError:
+        return None, 'Could not connect to the server.'
+    except requests.Timeout:
+        return None, 'Request timed out. Please try again.'
+    except requests.RequestException as e:
+        return None, f'Error submitting rating: {str(e)}'

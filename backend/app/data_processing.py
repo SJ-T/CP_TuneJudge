@@ -25,6 +25,8 @@ def get_processed_music_data():
         See the endpoint documentation for detailed response structure.
     """
     music_data = Music.objects.filter(label__in=['pop', 'classical']).values()
+    if not music_data:
+        return {'error': 'No music data available for analysis'}
     df = pd.DataFrame(music_data)
     df['genre'] = df['label']
     data = df.to_dict(orient='records')
