@@ -5,17 +5,16 @@ import dj_database_url
 from pathlib import Path
 
 
+# Core Django Settings
 BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.environ.get('DEBUG')
-
+DEBUG = os.environ.get('DEBUG', False)
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split(' ')
+ROOT_URLCONF = 'core.urls'
+WSGI_APPLICATION = 'core.wsgi.application'
 
-
-# Application definition
-
+# Application Settings
 INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.admin',
@@ -41,8 +40,6 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -59,12 +56,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# Database Configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -75,53 +69,9 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', default=''),
     }
 }
-
 if 'DATABASE_URL' in os.environ:
     DATABASE_URL = os.environ.get('DATABASE_URL')
     DATABASES['default'] = dj_database_url.parse(DATABASE_URL)
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-SUPER_USER = os.environ.get('SUPER_USER', None)
-SUPER_EMAIL = os.environ.get('SUPER_EMAIL', None)
-SUPER_PASS = os.environ.get('SUPER_PASS', None)
 
 if os.environ.get('USE_GCS', False):
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
@@ -135,16 +85,31 @@ else:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Static Files Configuration
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STORAGES = {
     'default': {'BACKEND': DEFAULT_FILE_STORAGE},
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
 
-DATASET_FEATURES_PATH = os.environ.get('DATASET_FEATURES_PATH', None)
-EXP_FEATURES_PATH = os.environ.get('EXP_FEATURES_PATH', None)
-WAV_FILE_PATH = os.environ.get('WAV_FILE_PATH', None)
+# Security Settings
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_HSTS_SECONDS = 86400
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
+# API and CORS Settings
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '50/day',
+    }
+}
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:8501').split(',')
@@ -154,5 +119,28 @@ CORS_ALLOW_METHODS = [
     'POST',
     'OPTIONS',
 ]
-
+CORS_EXPOSE_HEADERS = ['Content-Type']
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'content-type',
+    'origin',
+    'user-agent',
+]
 API_BASE_URL = os.environ.get('API_BASE_URL', 'http://localhost:8000/api/')
+
+# Application-Specific Settings
+DATASET_FEATURES_PATH = os.environ.get('DATASET_FEATURES_PATH', None)
+EXP_FEATURES_PATH = os.environ.get('EXP_FEATURES_PATH', None)
+WAV_FILE_PATH = os.environ.get('WAV_FILE_PATH', None)
+
+# Internationalization
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
+
+# Admin Settings
+SUPER_USER = os.environ.get('SUPER_USER', None)
+SUPER_EMAIL = os.environ.get('SUPER_EMAIL', None)
+SUPER_PASS = os.environ.get('SUPER_PASS', None)
