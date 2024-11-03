@@ -78,12 +78,14 @@ def load_data():
             else:
                 df_dict[key] = value
         return df_dict, None
-    except requests.ConnectionError:
-        return None, 'Could not connect to the server.'
-    except requests.Timeout:
-        return None, 'Request timed out. Please try again.'
-    except requests.RequestException as e:
-        return None, f'Error fetching data: {str(e)}'
+    except (requests.ConnectionError, requests.Timeout, requests.RequestException) as e:
+        st.cache_data.clear()
+        if isinstance(e, requests.ConnectionError):
+            return None, 'Could not connect to the server.'
+        elif isinstance(e, requests.Timeout):
+            return None, 'Request timed out. Please try again.'
+        else:
+            return None, f'Error fetching data: {str(e)}'
 
 
 def plot_histogram(df: pd.DataFrame, x_col, title, xaxis_title=None, color=None, histnorm='probability', **kwargs):
