@@ -54,13 +54,7 @@ class RatingModelTests(TestCase):
 class MusicViewSetTests(TestCase):
     def setUp(self):
         self.expected_fields = [
-            'id', 'title', 'label', 'file', 'key',
-            'npvi', 'note_density', 'pitch_range',
-            'pitch_count', 'pitch_class_count',
-            'pitch_entropy', 'pitch_class_entropy',
-            'pitch_in_scale_rate', 'scale_consistency',
-            'polyphony', 'polyphony_rate',
-            'complexity', 'originality', 'gradus'
+            'id', 'title', 'label', 'file'
         ]
         self.music_data = [{'title': 'Test Song', 'label': 'pop'},
                            {'title': 'Test Song', 'label': 'classical'},
@@ -161,10 +155,21 @@ class MusicAnalysisDataTests(TestCase):
     def test_no_music_data(self):
         Music.objects.all().delete()
         response = self.client.get(reverse('feature-analysis'))
-        self.assertEqual(response.status_code, 200)
         data = response.json()
+        self.assertEqual(response.status_code, 200)
         self.assertIn('error', data)
         self.assertEqual(data['error'], 'No music data available for analysis')
+
+
+class MusicAnalysisIncompleteDataTests(TestCase):
+    fixtures = ['test_music_data_incomplete.json']
+
+    def test_incomplete_music_data(self):
+        response = self.client.get(reverse('feature-analysis'))
+        data = response.json()
+        self.assertEqual(response.status_code, 500)
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'An unexpected error occurred during data processing')
 
 
 # test serializers

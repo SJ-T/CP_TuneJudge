@@ -65,15 +65,15 @@ DATABASES = {
         'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST', default='localhost'),
-        'PORT': os.environ.get('DB_PORT', default=''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 if 'DATABASE_URL' in os.environ:
     DATABASE_URL = os.environ.get('DATABASE_URL')
     DATABASES['default'] = dj_database_url.parse(DATABASE_URL)
 
-if os.environ.get('USE_GCS', False):
+if os.environ.get('USE_GCS', False).lower() == 'true':
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', None)
     GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', None)
