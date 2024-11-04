@@ -29,9 +29,8 @@ def music_analysis_data(request):
     try:
         data = get_processed_music_data()
         return JsonResponse(data, safe=False)
-    except Exception as e:
-        error_details = str(e) if settings.DEBUG else 'An unexpected error occurred'
-        return Response({'error': error_details}, status=500)
+    except Exception:
+        return Response({'error': 'An unexpected error occurred during data processing'}, status=500)
 
 
 class MusicViewSet(viewsets.ReadOnlyModelViewSet):
