@@ -73,7 +73,7 @@ if 'DATABASE_URL' in os.environ:
     DATABASE_URL = os.environ.get('DATABASE_URL')
     DATABASES['default'] = dj_database_url.parse(DATABASE_URL)
 
-if os.environ.get('USE_GCS', False).lower() == 'true':
+if os.environ.get('USE_GCS', 'false').lower() == 'true':
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', None)
     GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', None)
